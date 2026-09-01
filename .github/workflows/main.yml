@@ -25,6 +25,9 @@ jobs:
       - name: Baixar arquivos
         uses: actions/checkout@v4
 
+      - name: Inserir chave Supabase
+        run: sed -i "s|__SUPABASE_PUBLISHABLE_KEY__|${{ secrets.SUPABASE_PUBLISHABLE_KEY }}|g" index.html
+
       - name: Configurar Pages
         uses: actions/configure-pages@v5
 
