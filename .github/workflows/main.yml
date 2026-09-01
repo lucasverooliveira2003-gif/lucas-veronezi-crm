@@ -38,7 +38,7 @@ jobs:
 
           arquivo = Path("index.html")
           texto = arquivo.read_text(encoding="utf-8")
-          texto = texto.replace("__SUPABASE_PUBLISHABLE_KEY__", os.environ["SUPABASE_ANON_KEY"])
+          texto = texto.replace("COLE_AQUI_A_PUBLISHABLE_KEY", os.environ["SUPABASE_ANON_KEY"])
           texto = texto.replace("__SUPABASE_URL__", os.environ["SUPABASE_URL"])
           arquivo.write_text(texto, encoding="utf-8")
           PY
