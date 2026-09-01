@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lucas Veronezi | Área Administrativa</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--navy:#071d35;--navy2:#0c2b4c;--gold:#c99a3d;--bg:#f5f6f8;--text:#172131;--muted:#6b7785;--line:#e1e5ea;--red:#b42318;--green:#067647;--yellow:#b54708}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.topbar{height:72px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:30}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800}.mark{width:42px;height:42px;border:2px solid var(--gold);display:grid;place-items:center;color:var(--gold);font-size:21px}.brand small{display:block;font-weight:400;letter-spacing:1.2px;color:#d6dce3;margin-top:2px}
+.top-actions{display:flex;align-items:center;gap:10px}.btn{border:0;border-radius:8px;padding:10px 14px;font-weight:700}.btn.gold{background:var(--gold);color:#102033}.btn.navy{background:var(--navy);color:#fff}.btn.light{background:#fff;border:1px solid var(--line)}.btn.danger{background:#fee4e2;color:var(--red)}.btn.small{padding:7px 10px;font-size:13px}
+.login-shell{min-height:100vh;display:grid;place-items:center;background:linear-gradient(135deg,var(--navy),var(--navy2));padding:20px}.login-card{background:#fff;width:min(430px,100%);padding:30px;border-radius:16px;box-shadow:0 25px 70px #0005}.login-card h1{margin:0 0 8px}.login-card p{color:var(--muted)}.field{margin:13px 0}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;background:#fff}.field textarea{min-height:90px;resize:vertical}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 72px)}.sidebar{background:#fff;border-right:1px solid var(--line);padding:16px 12px}.menu{display:grid;gap:6px}.menu button{border:0;background:transparent;text-align:left;padding:11px 12px;border-radius:8px;color:#334155}.menu button.active{background:#eef2f6;color:var(--navy);font-weight:800}.content{padding:24px;min-width:0}.section{display:none}.section.active{display:block}.head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.head h1{margin:0;font-size:28px}.muted{color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.metric{background:#fff;border:1px solid var(--line);border-radius:12px;padding:17px}.metric b{display:block;font-size:28px;color:var(--navy);margin-top:6px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px;overflow:auto}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px}.toolbar input,.toolbar select{padding:9px 10px;border:1px solid var(--line);border-radius:8px}
+table{width:100%;border-collapse:collapse;min-width:850px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:top}th{font-size:12px;text-transform:uppercase;color:var(--muted)}
+.badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:12px;background:#eef2f6}.badge.green{background:#dcfae6;color:var(--green)}.badge.red{background:#fee4e2;color:var(--red)}.badge.yellow{background:#fef0c7;color:var(--yellow)}
+dialog{border:0;border-radius:14px;width:min(760px,calc(100% - 24px));max-height:90vh;padding:0;box-shadow:0 25px 80px #0006}dialog::backdrop{background:#00152db8}.modal{padding:22px}.modal h2{margin-top:0}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.toast{position:fixed;right:18px;bottom:18px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:8px;display:none;z-index:100}
+.photo-list{display:flex;gap:8px;flex-wrap:wrap}.thumb{width:110px;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}.thumb img{width:100%;height:75px;object-fit:cover}.thumb div{padding:6px;font-size:11px}.calendar-list{display:grid;gap:9px}.event{border-left:4px solid var(--gold);padding:10px;background:#fff;border-radius:8px;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+@media(max-width:950px){.app{grid-template-columns:1fr}.sidebar{border-right:0;border-bottom:1px solid var(--line);overflow:auto}.menu{display:flex;min-width:max-content}.content{padding:16px}.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.cards,.grid2,.grid3{grid-template-columns:1fr}.topbar{padding:0 12px}.top-actions span{display:none}.brand small{font-size:10px}}
+</style>
+</head>
+<body>
+
+<div id="loginView" class="login-shell">
+  <div class="login-card">
+    <div class="brand" style="color:var(--navy);margin-bottom:18px"><div class="mark">LV</div><div>LUCAS VERONEZI<small style="color:#667085">CORRETOR DE IMÓVEIS</small></div></div>
+    <h1>Área administrativa</h1>
+    <p>Entre com o usuário cadastrado no Supabase Auth.</p>
+    <form id="loginForm">
+      <div class="field"><label>E-mail</label><input id="loginEmail" type="email" required autocomplete="username"></div>
+      <div class="field"><label>Senha</label><input id="loginPassword" type="password" required autocomplete="current-password"></div>
+      <button class="btn gold" style="width:100%" type="submit">Entrar</button>
+    </form>
+    <button id="forgotBtn" class="btn light" style="width:100%;margin-top:9px">Esqueci minha senha</button>
+    <p id="loginMsg" class="muted"></p>
+    <a href="index.html" style="color:var(--navy)">← Voltar para o site</a>
+  </div>
+</div>
+
+<div id="adminView" class="hidden">
+  <header class="topbar">
+    <div class="brand"><div class="mark">LV</div><div>LUCAS VERONEZI<small>CORRETOR DE IMÓVEIS</small></div></div>
+    <div class="top-actions"><span id="userEmail"></span><button id="logoutBtn" class="btn gold">Sair</button></div>
+  </header>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="menu" id="menu">
+        <button data-section="dashboard" class="active">Dashboard</button>
+        <button data-section="clientes">Clientes</button>
+        <button data-section="repescagem">Repescagem</button>
+        <button data-section="imoveis">Imóveis</button>
+        <button data-section="agenda">Agenda</button>
+        <button data-section="tarefas">Tarefas</button>
+        <button data-section="relatorios">Relatórios</button>
+        <button data-section="configuracoes">Configurações</button>
+      </div>
+    </aside>
+
+    <main class="content">
+      <section id="dashboard" class="section active">
+        <div class="head"><div><h1>Dashboard</h1><div class="muted">O que precisa da sua atenção hoje.</div></div><button class="btn light" onclick="refreshAll()">Atualizar</button></div>
+        <div class="cards">
+          <div class="metric">Clientes ativos<b id="mActive">0</b></div>
+          <div class="metric">Em repescagem<b id="mLost">0</b></div>
+          <div class="metric">Imóveis disponíveis<b id="mProps">0</b></div>
+          <div class="metric">Tarefas pendentes<b id="mTasks">0</b></div>
+        </div>
+        <div class="panel"><h3>Atenção de clientes</h3><div id="attention"></div></div>
+        <div class="panel"><h3>Agenda de hoje</h3><div id="todayAgenda"></div></div>
+      </section>
+
+      <section id="clientes" class="section">
+        <div class="head"><div><h1>Clientes</h1><div class="muted">Todos os atendimentos ativos.</div></div><button class="btn gold" onclick="openClient()">+ Novo cliente</button></div>
+        <div class="panel">
+          <div class="toolbar"><input id="clientSearch" placeholder="Buscar cliente..." oninput="renderClients()"><select id="clientStatusFilter" onchange="renderClients()"><option value="">Todos os status</option><option>Novo Lead</option><option>Em atendimento</option><option>Aguardando</option><option>Visita</option><option>Negociação</option><option>Fechado</option></select></div>
+          <div id="clientsTable"></div>
+        </div>
+      </section>
+
+      <section id="repescagem" class="section">
+        <div class="head"><div><h1>Repescagem</h1><div class="muted">Clientes preservados para futuras oportunidades.</div></div></div>
+        <div class="panel"><div id="lostTable"></div></div>
+      </section>
+
+      <section id="imoveis" class="section">
+        <div class="head"><div><h1>Imóveis</h1><div class="muted">Cadastre uma vez e edite sempre que precisar.</div></div><button class="btn gold" onclick="openProperty()">+ Cadastrar imóvel/lote</button></div>
+        <div class="panel"><div id="propertiesTable"></div></div>
+      </section>
+
+      <section id="agenda" class="section">
+        <div class="head"><div><h1>Agenda</h1><div class="muted">Compromissos por data e horário.</div></div><button class="btn gold" onclick="openAgenda()">+ Novo compromisso</button></div>
+        <div class="panel"><div class="toolbar"><input id="agendaDate" type="date" onchange="renderAgenda()"><button class="btn light small" onclick="agendaToday()">Hoje</button></div><div id="agendaList" class="calendar-list"></div></div>
+      </section>
+
+      <section id="tarefas" class="section">
+        <div class="head"><div><h1>Tarefas</h1><div class="muted">Pendentes, atrasadas e concluídas.</div></div><button class="btn gold" onclick="openTask()">+ Nova tarefa</button></div>
+        <div class="panel"><div id="tasksTable"></div></div>
+      </section>
+
+      <section id="relatorios" class="section">
+        <div class="head"><div><h1>Relatórios</h1><div class="muted">Visão simples do funil e das origens.</div></div></div>
+        <div class="cards"><div class="metric">Leads totais<b id="rTotal">0</b></div><div class="metric">Negociações<b id="rNegotiation">0</b></div><div class="metric">Fechados<b id="rClosed">0</b></div><div class="metric">Repescagem<b id="rLost">0</b></div></div>
+        <div class="panel"><h3>Leads por origem</h3><div id="originsReport"></div></div>
+      </section>
+
+      <section id="configuracoes" class="section">
+        <div class="head"><div><h1>Configurações</h1><div class="muted">Dados profissionais e alertas.</div></div></div>
+        <div class="panel">
+          <form id="settingsForm">
+            <div class="grid2"><div class="field"><label>Nome profissional</label><input id="setName"></div><div class="field"><label>WhatsApp</label><input id="setWhats"></div><div class="field"><label>CRECI</label><input id="setCreci"></div><div class="field"><label>Região</label><input id="setRegion"></div><div class="field"><label>Alerta amarelo (dias)</label><input id="setYellow" type="number" min="0"></div><div class="field"><label>Alerta vermelho (dias)</label><input id="setRed" type="number" min="0"></div></div>
+            <button class="btn gold">Salvar configurações</button>
+          </form>
+          <hr style="border:0;border-top:1px solid var(--line);margin:24px 0">
+          <h3>Segurança da conta</h3>
+          <p class="muted">Alteração de e-mail e senha é feita pelo Supabase Auth. O login desta página usa autenticação segura.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<dialog id="clientDialog"><form class="modal" id="clientForm"><h2 id="clientTitle">Novo cliente</h2><input id="clientId" type="hidden">
+<div class="grid2">
+<div class="field"><label>Nome</label><input id="cName" required></div><div class="field"><label>WhatsApp</label><input id="cWhats"></div>
+<div class="field"><label>Cidade</label><input id="cCity"></div><div class="field"><label>Origem</label><select id="cOrigin"><option>WhatsApp</option><option>Marketplace</option><option>Instagram</option><option>Indicação</option><option>Placa</option><option>Ligação</option><option>Landing Page</option><option>Outro</option></select></div>
+<div class="field"><label>O que procura</label><input id="cLooking"></div><div class="field"><label>Bairro / região</label><input id="cRegion"></div>
+<div class="field"><label>Orçamento mínimo</label><input id="cMin" type="number" min="0"></div><div class="field"><label>Orçamento máximo</label><input id="cMax" type="number" min="0"></div>
+<div class="field"><label>Dormitórios</label><input id="cBeds" type="number" min="0"></div><div class="field"><label>Status</label><select id="cStatus"><option>Novo Lead</option><option>Em atendimento</option><option>Aguardando</option><option>Visita</option><option>Negociação</option><option>Fechado</option><option>Repescagem</option></select></div>
+<div class="field"><label>Último contato</label><input id="cLast" type="datetime-local"></div><div class="field"><label>Próximo contato</label><input id="cNext" type="datetime-local"></div>
+</div><div class="field"><label>Observações</label><textarea id="cNotes"></textarea></div><div id="lossField" class="field hidden"><label>Motivo da perda</label><select id="cLoss"><option value="">Selecione</option><option>Comprou com outro corretor</option><option>Desistiu</option><option>Financiamento</option><option>Preço</option><option>Não respondeu</option><option>Momento financeiro</option><option>Outro</option></select></div>
+<div class="actions"><button type="button" class="btn light" onclick="clientDialog.close()">Cancelar</button><button class="btn gold">Salvar</button></div></form></dialog>
+
+<dialog id="propertyDialog"><form class="modal" id="propertyForm"><h2 id="propertyTitle">Cadastrar imóvel/lote</h2><input id="propertyId" type="hidden">
+<div class="grid3">
+<div class="field"><label>Referência</label><input id="pRef" required></div><div class="field"><label>Localização</label><input id="pLocation" required></div><div class="field"><label>Tipo do imóvel</label><input id="pType" required placeholder="Casa, Apartamento, Terreno..."></div>
+</div><div class="field"><label>Descrição</label><textarea id="pDescription"></textarea></div>
+<div class="grid3">
+<div class="field"><label>Quartos</label><input id="pBeds" type="number" min="0"></div><div class="field"><label>Suítes</label><input id="pSuites" type="number" min="0"></div><div class="field"><label>Salas</label><input id="pRooms" type="number" min="0"></div>
+<div class="field"><label>Cozinhas</label><input id="pKitchens" type="number" min="0"></div><div class="field"><label>Banheiros</label><input id="pBaths" type="number" min="0"></div><div class="field"><label>Garagem</label><input id="pGarage" type="number" min="0"></div>
+<div class="field"><label>Área do terreno (m²)</label><input id="pLand" type="number" step="0.01" min="0"></div><div class="field"><label>Área construída (m²)</label><input id="pBuilt" type="number" step="0.01" min="0"></div><div class="field"><label>Valor</label><input id="pPrice" type="number" step="0.01" min="0"></div>
+</div>
+<div class="field"><label>Características extras (separe por vírgula)</label><input id="pExtras"></div>
+<div class="grid2"><div class="field"><label>Status</label><select id="pStatus"><option>Disponível</option><option>Reservado</option><option>Vendido</option><option>Inativo</option></select></div><div class="field"><label>Publicar na Landing Page</label><select id="pPublished"><option value="false">Não</option><option value="true">Sim</option></select></div></div>
+<div class="field"><label>Adicionar fotos</label><input id="pPhotos" type="file" accept="image/*" multiple></div><div id="photoList" class="photo-list"></div>
+<div class="actions"><button type="button" class="btn light" onclick="propertyDialog.close()">Cancelar</button><button class="btn gold">Salvar</button></div></form></dialog>
+
+<dialog id="agendaDialog"><form class="modal" id="agendaForm"><h2>Compromisso</h2><input id="agendaId" type="hidden"><div class="grid2"><div class="field"><label>Título</label><input id="aTitle" required></div><div class="field"><label>Tipo</label><input id="aType" value="Compromisso"></div><div class="field"><label>Início</label><input id="aStart" type="datetime-local" required></div><div class="field"><label>Fim</label><input id="aEnd" type="datetime-local"></div><div class="field"><label>Cliente</label><select id="aClient"></select></div><div class="field"><label>Imóvel</label><select id="aProperty"></select></div></div><div class="field"><label>Observações</label><textarea id="aNotes"></textarea></div><div class="actions"><button type="button" class="btn light" onclick="agendaDialog.close()">Cancelar</button><button class="btn gold">Salvar</button></div></form></dialog>
+
+<dialog id="taskDialog"><form class="modal" id="taskForm"><h2>Tarefa</h2><input id="taskId" type="hidden"><div class="grid2"><div class="field"><label>Título</label><input id="tTitle" required></div><div class="field"><label>Prazo</label><input id="tDue" type="datetime-local"></div><div class="field"><label>Prioridade</label><select id="tPriority"><option>Baixa</option><option selected>Normal</option><option>Alta</option></select></div><div class="field"><label>Status</label><select id="tStatus"><option>Pendente</option><option>Concluída</option></select></div><div class="field"><label>Cliente</label><select id="tClient"></select></div><div class="field"><label>Imóvel</label><select id="tProperty"></select></div></div><div class="field"><label>Observações</label><textarea id="tNotes"></textarea></div><div class="actions"><button type="button" class="btn light" onclick="taskDialog.close()">Cancelar</button><button class="btn gold">Salvar</button></div></form></dialog>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const SUPABASE_URL='https://mbjyiahmzuveuxpceqxx.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_4UoInp5EL2p1Oj66ahAKFg_IKMXt_8n';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+const S={clients:[],properties:[],agenda:[],tasks:[],settings:null};
+const $=id=>document.getElementById(id);
+const money=v=>v==null?'—':Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+const dt=v=>v?new Date(v).toLocaleString('pt-BR'):'—';
+const local=v=>v?new Date(v).toISOString().slice(0,16):'';
+const val=id=>$(id).value;
+const num=id=>val(id)===''?null:Number(val(id));
+function toast(m){$('toast').textContent=m;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',3000)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function daysSince(v){if(!v)return 999;return Math.floor((Date.now()-new Date(v).getTime())/86400000)}
+function attentionBadge(c){const y=S.settings?.alert_yellow_days??3,r=S.settings?.alert_red_days??7,d=daysSince(c.last_contact_at);if(d>=r)return '<span class="badge red">Atrasado</span>';if(d>=y)return '<span class="badge yellow">Atenção</span>';return '<span class="badge green">Em dia</span>'}
+function optionLists(){
+  const clients='<option value="">—</option>'+S.clients.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  const props='<option value="">—</option>'+S.properties.map(p=>`<option value="${p.id}">REF ${esc(p.ref)} - ${esc(p.location)}</option>`).join('');
+  ['aClient','tClient'].forEach(id=>$(id).innerHTML=clients);['aProperty','tProperty'].forEach(id=>$(id).innerHTML=props)
+}
+async function requireSession(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(session)showAdmin(session);else{$('loginView').classList.remove('hidden');$('adminView').classList.add('hidden')}
+}
+async function showAdmin(session){$('loginView').classList.add('hidden');$('adminView').classList.remove('hidden');$('userEmail').textContent=session.user.email||'';await refreshAll()}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginMsg').textContent='Entrando...';const {data,error}=await sb.auth.signInWithPassword({email:val('loginEmail'),password:val('loginPassword')});if(error){$('loginMsg').textContent=error.message;return}showAdmin(data.session)});
+$('forgotBtn').onclick=async()=>{const email=val('loginEmail');if(!email){$('loginMsg').textContent='Digite seu e-mail primeiro.';return}const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.href});$('loginMsg').textContent=error?error.message:'E-mail de recuperação enviado.'};
+$('logoutBtn').onclick=async()=>{await sb.auth.signOut();location.reload()};
+sb.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT')requireSession()});
+
+document.querySelectorAll('#menu button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#menu button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));$(b.dataset.section).classList.add('active')});
+
+async function refreshAll(){
+  const [c,p,a,t,s]=await Promise.all([
+    sb.from('clients').select('*').order('created_at',{ascending:false}),
+    sb.from('properties').select('*,property_photos(*)').order('created_at',{ascending:false}),
+    sb.from('agenda_events').select('*').order('starts_at',{ascending:true}),
+    sb.from('tasks').select('*').order('created_at',{ascending:false}),
+    sb.from('system_settings').select('*').limit(1)
+  ]);
+  const err=[c,p,a,t,s].find(x=>x.error)?.error;if(err){console.error(err);toast('Erro ao carregar CRM.');return}
+  S.clients=c.data||[];S.properties=p.data||[];S.agenda=a.data||[];S.tasks=t.data||[];S.settings=(s.data||[])[0]||null;
+  optionLists();renderAll()
+}
+function renderAll(){renderDashboard();renderClients();renderLost();renderProperties();renderAgenda();renderTasks();renderReports();renderSettings()}
+function renderDashboard(){
+  const active=S.clients.filter(c=>c.status!=='Repescagem').length;
+  $('mActive').textContent=active;$('mLost').textContent=S.clients.filter(c=>c.status==='Repescagem').length;$('mProps').textContent=S.properties.filter(p=>p.status==='Disponível').length;$('mTasks').textContent=S.tasks.filter(t=>t.status==='Pendente').length;
+  const needs=S.clients.filter(c=>c.status!=='Repescagem'&&c.status!=='Fechado').sort((a,b)=>daysSince(b.last_contact_at)-daysSince(a.last_contact_at)).slice(0,8);
+  $('attention').innerHTML=needs.length?needs.map(c=>`<div style="padding:9px 0;border-bottom:1px solid var(--line)"><b>${esc(c.name)}</b> · ${esc(c.status)} · ${attentionBadge(c)} <span class="muted">Último contato: ${dt(c.last_contact_at)}</span></div>`).join(''):'Nenhum cliente.';
+  const today=new Date().toISOString().slice(0,10);const ev=S.agenda.filter(a=>String(a.starts_at).slice(0,10)===today);
+  $('todayAgenda').innerHTML=ev.length?ev.map(a=>`<div class="event"><b>${esc(a.title)}</b><br>${dt(a.starts_at)}</div>`).join(''):'Nenhum compromisso hoje.'
+}
+function renderClients(){
+  const q=val('clientSearch').toLowerCase(),f=val('clientStatusFilter');const rows=S.clients.filter(c=>c.status!=='Repescagem').filter(c=>(!q||`${c.name} ${c.whatsapp||''} ${c.city||''}`.toLowerCase().includes(q))&&(!f||c.status===f));
+  $('clientsTable').innerHTML=`<table><thead><tr><th>Cliente</th><th>Contato</th><th>Origem</th><th>Status</th><th>Último contato</th><th>Atenção</th><th></th></tr></thead><tbody>${rows.map(c=>`<tr><td><b>${esc(c.name)}</b><br><span class="muted">${esc(c.looking_for||'')}</span></td><td>${esc(c.whatsapp||'—')}<br>${esc(c.city||'')}</td><td>${esc(c.origin)}</td><td>${esc(c.status)}</td><td>${dt(c.last_contact_at)}</td><td>${attentionBadge(c)}</td><td><button class="btn light small" onclick="openClient('${c.id}')">Editar</button></td></tr>`).join('')}</tbody></table>`
+}
+function renderLost(){
+ const rows=S.clients.filter(c=>c.status==='Repescagem');$('lostTable').innerHTML=`<table><thead><tr><th>Cliente</th><th>Motivo</th><th>Último contato</th><th>Dias</th><th></th></tr></thead><tbody>${rows.map(c=>`<tr><td><b>${esc(c.name)}</b><br>${esc(c.whatsapp||'')}</td><td>${esc(c.loss_reason||'—')}</td><td>${dt(c.last_contact_at)}</td><td>${daysSince(c.last_contact_at)}</td><td><button class="btn light small" onclick="openClient('${c.id}')">Editar</button> <button class="btn gold small" onclick="reactivate('${c.id}')">♻ Reativar cliente</button></td></tr>`).join('')}</tbody></table>`
+}
+window.openClient=id=>{
+ const c=S.clients.find(x=>x.id===id);$('clientForm').reset();$('clientId').value=c?.id||'';$('clientTitle').textContent=c?'Editar cliente':'Novo cliente';$('cName').value=c?.name||'';$('cWhats').value=c?.whatsapp||'';$('cCity').value=c?.city||'';$('cOrigin').value=c?.origin||'WhatsApp';$('cLooking').value=c?.looking_for||'';$('cRegion').value=c?.neighborhood_region||'';$('cMin').value=c?.budget_min??'';$('cMax').value=c?.budget_max??'';$('cBeds').value=c?.bedrooms??'';$('cStatus').value=c?.status||'Novo Lead';$('cLast').value=local(c?.last_contact_at);$('cNext').value=local(c?.next_contact_at);$('cNotes').value=c?.notes||'';$('cLoss').value=c?.loss_reason||'';toggleLoss();clientDialog.showModal()
+};
+$('cStatus').onchange=toggleLoss;function toggleLoss(){$('lossField').classList.toggle('hidden',val('cStatus')!=='Repescagem')}
+$('clientForm').onsubmit=async e=>{e.preventDefault();const id=val('clientId'),status=val('cStatus');const data={name:val('cName'),whatsapp:val('cWhats')||null,city:val('cCity')||null,origin:val('cOrigin'),looking_for:val('cLooking')||null,neighborhood_region:val('cRegion')||null,budget_min:num('cMin'),budget_max:num('cMax'),bedrooms:num('cBeds'),status,last_contact_at:val('cLast')||null,next_contact_at:val('cNext')||null,notes:val('cNotes')||null,loss_reason:status==='Repescagem'?(val('cLoss')||'Outro'):null,lost_at:status==='Repescagem'?new Date().toISOString():null};const r=id?await sb.from('clients').update(data).eq('id',id):await sb.from('clients').insert(data);if(r.error){console.error(r.error);toast(r.error.message);return}clientDialog.close();toast('Cliente salvo.');refreshAll()};
+window.reactivate=async id=>{const r=await sb.from('clients').update({status:'Em atendimento',reactivated_at:new Date().toISOString(),loss_reason:null,lost_at:null}).eq('id',id);if(r.error)toast(r.error.message);else{toast('Cliente reativado.');refreshAll()}};
+
+function renderProperties(){
+ $('propertiesTable').innerHTML=`<table><thead><tr><th>REF</th><th>Tipo / localização</th><th>Valor</th><th>Status</th><th>Landing</th><th>Fotos</th><th></th></tr></thead><tbody>${S.properties.map(p=>`<tr><td><b>${esc(p.ref)}</b></td><td>${esc(p.property_type)}<br><span class="muted">${esc(p.location)}</span></td><td>${money(p.price)}</td><td>${esc(p.status)}</td><td>${p.published?'<span class="badge green">Publicado</span>':'<span class="badge">Não</span>'}</td><td>${p.property_photos?.length||0}</td><td><button class="btn light small" onclick="openProperty('${p.id}')">Editar</button></td></tr>`).join('')}</tbody></table>`
+}
+window.openProperty=id=>{const p=S.properties.find(x=>x.id===id);$('propertyForm').reset();$('propertyId').value=p?.id||'';$('propertyTitle').textContent=p?'Editar imóvel':'Cadastrar imóvel/lote';$('pRef').value=p?.ref||'';$('pLocation').value=p?.location||'';$('pType').value=p?.property_type||'';$('pDescription').value=p?.description||'';$('pBeds').value=p?.bedrooms??'';$('pSuites').value=p?.suites??'';$('pRooms').value=p?.living_rooms??'';$('pKitchens').value=p?.kitchens??'';$('pBaths').value=p?.bathrooms??'';$('pGarage').value=p?.garage_spaces??'';$('pLand').value=p?.land_area??'';$('pBuilt').value=p?.built_area??'';$('pPrice').value=p?.price??'';$('pExtras').value=(p?.extra_features||[]).join(', ');$('pStatus').value=p?.status||'Disponível';$('pPublished').value=String(p?.published??false);renderPhotos(p);propertyDialog.showModal()};
+function renderPhotos(p){const photos=(p?.property_photos||[]).sort((a,b)=>a.position-b.position);$('photoList').innerHTML=photos.map(ph=>`<div class="thumb"><img src="${esc(ph.public_url||'')}"><div>#${ph.position} ${ph.position===1?'CAPA':''}</div></div>`).join('')}
+$('propertyForm').onsubmit=async e=>{e.preventDefault();const id=val('propertyId');const data={ref:val('pRef'),location:val('pLocation'),property_type:val('pType'),description:val('pDescription')||null,bedrooms:num('pBeds'),suites:num('pSuites'),living_rooms:num('pRooms'),kitchens:num('pKitchens'),bathrooms:num('pBaths'),garage_spaces:num('pGarage'),extra_features:val('pExtras').split(',').map(x=>x.trim()).filter(Boolean),land_area:num('pLand'),built_area:num('pBuilt'),price:num('pPrice'),status:val('pStatus'),published:val('pPublished')==='true'};let saved;if(id){const r=await sb.from('properties').update(data).eq('id',id).select().single();if(r.error){toast(r.error.message);return}saved=r.data}else{const r=await sb.from('properties').insert(data).select().single();if(r.error){toast(r.error.message);return}saved=r.data}const files=[...$('pPhotos').files];if(files.length){const existing=(S.properties.find(x=>x.id===saved.id)?.property_photos||[]).length;for(let i=0;i<files.length;i++){const f=files[i],safeName=f.name.replace(/[^a-zA-Z0-9._-]/g,'_'),path=`${saved.id}/${Date.now()}_${i}_${safeName}`;const up=await sb.storage.from('property-photos').upload(path,f);if(up.error){console.error(up.error);continue}const pub=sb.storage.from('property-photos').getPublicUrl(path).data.publicUrl;await sb.from('property_photos').insert({property_id:saved.id,storage_path:path,public_url:pub,position:existing+i+1})}}propertyDialog.close();toast('Imóvel salvo.');refreshAll()};
+
+function renderAgenda(){const d=val('agendaDate');let rows=S.agenda;if(d)rows=rows.filter(a=>String(a.starts_at).slice(0,10)===d);$('agendaList').innerHTML=rows.length?rows.map(a=>`<div class="event"><b>${esc(a.title)}</b> · ${esc(a.event_type)}<br>${dt(a.starts_at)}${a.ends_at?' até '+dt(a.ends_at):''}<br><span class="muted">${esc(a.notes||'')}</span><div style="margin-top:7px"><button class="btn light small" onclick="openAgenda('${a.id}')">Editar</button></div></div>`).join(''):'Nenhum compromisso.'}
+window.agendaToday=()=>{$('agendaDate').value=new Date().toISOString().slice(0,10);renderAgenda()};
+window.openAgenda=id=>{const a=S.agenda.find(x=>x.id===id);$('agendaForm').reset();$('agendaId').value=a?.id||'';$('aTitle').value=a?.title||'';$('aType').value=a?.event_type||'Compromisso';$('aStart').value=local(a?.starts_at);$('aEnd').value=local(a?.ends_at);$('aClient').value=a?.client_id||'';$('aProperty').value=a?.property_id||'';$('aNotes').value=a?.notes||'';agendaDialog.showModal()};
+$('agendaForm').onsubmit=async e=>{e.preventDefault();const id=val('agendaId'),data={title:val('aTitle'),event_type:val('aType')||'Compromisso',starts_at:val('aStart'),ends_at:val('aEnd')||null,client_id:val('aClient')||null,property_id:val('aProperty')||null,notes:val('aNotes')||null};const r=id?await sb.from('agenda_events').update(data).eq('id',id):await sb.from('agenda_events').insert(data);if(r.error)toast(r.error.message);else{agendaDialog.close();toast('Compromisso salvo.');refreshAll()}};
+
+function renderTasks(){$('tasksTable').innerHTML=`<table><thead><tr><th>Tarefa</th><th>Prazo</th><th>Prioridade</th><th>Status</th><th></th></tr></thead><tbody>${S.tasks.map(t=>`<tr><td><b>${esc(t.title)}</b><br><span class="muted">${esc(t.notes||'')}</span></td><td>${dt(t.due_at)}</td><td>${esc(t.priority)}</td><td>${esc(t.status)}</td><td><button class="btn light small" onclick="openTask('${t.id}')">Editar</button></td></tr>`).join('')}</tbody></table>`}
+window.openTask=id=>{const t=S.tasks.find(x=>x.id===id);$('taskForm').reset();$('taskId').value=t?.id||'';$('tTitle').value=t?.title||'';$('tDue').value=local(t?.due_at);$('tPriority').value=t?.priority||'Normal';$('tStatus').value=t?.status||'Pendente';$('tClient').value=t?.client_id||'';$('tProperty').value=t?.property_id||'';$('tNotes').value=t?.notes||'';taskDialog.showModal()};
+$('taskForm').onsubmit=async e=>{e.preventDefault();const id=val('taskId'),status=val('tStatus'),data={title:val('tTitle'),due_at:val('tDue')||null,priority:val('tPriority'),status,client_id:val('tClient')||null,property_id:val('tProperty')||null,notes:val('tNotes')||null,completed_at:status==='Concluída'?new Date().toISOString():null};const r=id?await sb.from('tasks').update(data).eq('id',id):await sb.from('tasks').insert(data);if(r.error)toast(r.error.message);else{taskDialog.close();toast('Tarefa salva.');refreshAll()}};
+
+function renderReports(){$('rTotal').textContent=S.clients.length;$('rNegotiation').textContent=S.clients.filter(c=>c.status==='Negociação').length;$('rClosed').textContent=S.clients.filter(c=>c.status==='Fechado').length;$('rLost').textContent=S.clients.filter(c=>c.status==='Repescagem').length;const map={};S.clients.forEach(c=>map[c.origin]=(map[c.origin]||0)+1);$('originsReport').innerHTML=Object.entries(map).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${esc(k)}</b>: ${v}</div>`).join('')||'Sem dados.'}
+function renderSettings(){const s=S.settings||{};$('setName').value=s.professional_name||'Lucas Veronezi';$('setWhats').value=s.whatsapp||'(18) 99680-7093';$('setCreci').value=s.creci||'323.983-F';$('setRegion').value=s.region||'Dracena/SP e região';$('setYellow').value=s.alert_yellow_days??3;$('setRed').value=s.alert_red_days??7}
+$('settingsForm').onsubmit=async e=>{e.preventDefault();const data={professional_name:val('setName'),whatsapp:val('setWhats'),creci:val('setCreci'),region:val('setRegion'),alert_yellow_days:num('setYellow')??3,alert_red_days:num('setRed')??7};let r;if(S.settings?.id)r=await sb.from('system_settings').update(data).eq('id',S.settings.id);else r=await sb.from('system_settings').insert(data);if(r.error)toast(r.error.message);else{toast('Configurações salvas.');refreshAll()}};
+
+requireSession();
+</script>
+</body>
+</html>
