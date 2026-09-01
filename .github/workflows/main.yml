@@ -21,12 +21,27 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Baixar arquivos
         uses: actions/checkout@v4
 
-      - name: Inserir chave Supabase
-       run: ´sed -i "s|__SUPABASE_PUBLISHABLE_KEY__|${{ secrets.SUPABASE_ANON_KEY }}|g" index.html
+      - name: Inserir dados do Supabase
+        shell: bash
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+
+          arquivo = Path("index.html")
+          texto = arquivo.read_text(encoding="utf-8")
+          texto = texto.replace("__SUPABASE_PUBLISHABLE_KEY__", os.environ["SUPABASE_ANON_KEY"])
+          texto = texto.replace("__SUPABASE_URL__", os.environ["SUPABASE_URL"])
+          arquivo.write_text(texto, encoding="utf-8")
+          PY
 
       - name: Configurar Pages
         uses: actions/configure-pages@v5
